@@ -1,0 +1,15 @@
+@startuml
+
+interface ICondition<I> {
+    + doAction(I): I
+}
+
+class State<I> {
+    - data: I
+    - listOfOutputState: MutableMap<State<I>, ICondition<I>>
+    + init()
+    + callAndExecute(I)
+    + addOutput(State<I>, ICondition<I>)
+}
+
+@enduml
