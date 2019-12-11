@@ -1,23 +1,48 @@
 import fr.alasdiablo.automata.link.IBasicLink;
 import fr.alasdiablo.automata.state.BasicState;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.Objects;
 
-public class Test {
-    public static void main(String[] args) {
-        BasicState<String, Character> stateNumberDectector = new StateNumberDectector();
-        BasicState<String, Character> stateNumberPrinter = new StateNumberPrinter();
-        IBasicLink<Character> linkNumber = new LinkNumber();
-        IBasicLink<Character> linkCaracter = new LinkCharacter();
-        String str = "kjffgjds dgd5gdfg 5s4 fgqdg88 gqg6465 d465 d \n f465s 6fqqdf 4";
-        stateNumberDectector.addOutput(stateNumberDectector, linkCaracter);
-        stateNumberDectector.addOutput(stateNumberPrinter, linkNumber);
-        stateNumberPrinter.addOutput(stateNumberDectector, linkCaracter);
-        stateNumberPrinter.addOutput(stateNumberPrinter, linkNumber);
-        stateNumberDectector.callAndExecute(str);
-    }
-}
+public class TestAutomata {
 
+    public static String test_number_detector_out = "";
+
+    @Test
+    public void test_number_detector() {
+        // create number detector
+        BasicState<String, Character> stateNumberDectector = new StateNumberDectector();
+        // create number printer
+        BasicState<String, Character> stateNumberPrinter = new StateNumberPrinter();
+        // create link to the number printer
+        IBasicLink<Character> linkNumber = new LinkNumber();
+        // create link to number detector
+        IBasicLink<Character> linkCaracter = new LinkCharacter();
+        // add link to state (from number detector to number detector)
+        stateNumberDectector.addOutput(stateNumberDectector, linkCaracter);
+        // add link to state (from number detector to number printer)
+        stateNumberDectector.addOutput(stateNumberPrinter, linkNumber);
+        // add link to state (from number printer to number detector)
+        stateNumberPrinter.addOutput(stateNumberDectector, linkCaracter);
+        // add link to state (from number printer to number printer)
+        stateNumberPrinter.addOutput(stateNumberPrinter, linkNumber);
+
+        // String to test
+        //                   1      2     34                 5              6           7           8                       9
+        String input = "HDOCJ1VOBpae2zrkjb34pfpBKLDSFGQPOIpoe5kjhfdkgksdfgùù6qgkgfqroeç_7'DFFKLKGFDS8GlfjdgsdhfarhtfjhgKJHFD9GKSJDFLKGJlkfdgslsdg";
+        // list of number in the string
+        String number = "123456789";
+        // execute the number detector
+        stateNumberDectector.callAndExecute(input);
+
+        // test if the detector work correctly
+        Assert.assertEquals("This output is wrong", number, test_number_detector_out);
+    }
+
+
+}
+// test_number_detector class declaration
 class LinkNumber implements IBasicLink<Character> {
     @Override
     public boolean checkIfValid(Character value) {
@@ -32,7 +57,7 @@ class LinkNumber implements IBasicLink<Character> {
             case '7':
             case '8':
             case '9':
-            return true;
+                return true;
             default:
                 return false;
         }
@@ -91,6 +116,6 @@ class StateNumberPrinter extends  BasicState<String, Character> {
 
     @Override
     public void actionOnCall(Character data) {
-        System.out.print(data.charValue());
+        TestAutomata.test_number_detector_out += data;
     }
 }
